@@ -5,10 +5,14 @@ import { StartPage } from "./components/StartPage";
 import { DetailsPage } from "./components/DetailsPage";
 import { createContext, useState } from "react";
 import { BasicData } from "./models/BasicData";
+import { ExtendedData } from "./models/ExtendedData";
+import { UsageIntent } from "./models/UsageIntent";
 
 interface DataContext {
   basicData: BasicData;
   basicDataModifier: (value: BasicData) => void;
+  extendedData: ExtendedData;
+  extendedDataModifier: (value: ExtendedData) => void;
 }
 
 export const DataContext = createContext<DataContext>({
@@ -20,6 +24,11 @@ export const DataContext = createContext<DataContext>({
     privacyPolicyConsent: false,
   },
   basicDataModifier: (value: BasicData) => {},
+  extendedData: {
+    insuranceStartDate: new Date(),
+    usageIntent: UsageIntent.Private,
+  },
+  extendedDataModifier: (value: ExtendedData) => {},
 });
 
 function App() {
@@ -31,13 +40,27 @@ function App() {
     privacyPolicyConsent: false,
   });
 
+  const [extendedData, setExtendedData] = useState<ExtendedData>({
+    insuranceStartDate: new Date(),
+    usageIntent: UsageIntent.Private,
+  });
+
   const basicDataModifier = (value: BasicData) => {
     setBasicData(value);
   };
 
+  const extendedDataModifier = (value: ExtendedData) => {
+    setExtendedData(value);
+  };
+
   return (
     <DataContext.Provider
-      value={{ basicData: basicData, basicDataModifier: basicDataModifier }}
+      value={{
+        basicData: basicData,
+        basicDataModifier: basicDataModifier,
+        extendedData: extendedData,
+        extendedDataModifier: extendedDataModifier,
+      }}
     >
       <ChakraProvider>
         <BrowserRouter>

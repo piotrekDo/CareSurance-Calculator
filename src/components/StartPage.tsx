@@ -1,7 +1,4 @@
 import {
-  Center,
-  Stack,
-  Heading,
   FormControl,
   FormLabel,
   Input,
@@ -12,6 +9,11 @@ import {
 import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { DataContext } from "../App";
+<<<<<<< HEAD
+=======
+import { isPeselNumberValid } from "../utils/validators";
+import { PeselInput } from "./PeselInput";
+>>>>>>> upstream/main
 import { Wrapper } from "./Wrapper";
 
 export const StartPage = () => {
@@ -27,13 +29,6 @@ export const StartPage = () => {
     });
   };
 
-  const onPeselNumberChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
-    context.basicDataModifier({
-      ...context.basicData,
-      peselNumber: event.currentTarget.value,
-    });
-  };
-
   const onPrivacyPolicyConsentChanged = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -41,14 +36,6 @@ export const StartPage = () => {
       ...context.basicData,
       privacyPolicyConsent: event.currentTarget.checked,
     });
-  };
-
-  const isPeselNumberValid = () => {
-    if (!context.basicData.peselNumber) {
-      return false;
-    }
-
-    return context.basicData.peselNumber.length === 11;
   };
 
   const isRegistrationNumberValid = () => {
@@ -74,6 +61,7 @@ export const StartPage = () => {
         />
         <FormErrorMessage>Niewłaściwy numer rejestracyjny</FormErrorMessage>
       </FormControl>
+<<<<<<< HEAD
       <FormControl
         isInvalid={!!context.basicData.peselNumber && !isPeselNumberValid()}
       >
@@ -85,6 +73,9 @@ export const StartPage = () => {
         />
         <FormErrorMessage>Niewłaściwy numer PESEL</FormErrorMessage>
       </FormControl>
+=======
+      <PeselInput />
+>>>>>>> upstream/main
       <Checkbox
         onChange={onPrivacyPolicyConsentChanged}
         isInvalid={!context.basicData.privacyPolicyConsent}
@@ -95,7 +86,11 @@ export const StartPage = () => {
         colorScheme="red"
         disabled={
           !isRegistrationNumberValid() ||
+<<<<<<< HEAD
           !isPeselNumberValid() ||
+=======
+          !isPeselNumberValid(context.basicData.peselNumber) ||
+>>>>>>> upstream/main
           !context.basicData.privacyPolicyConsent
         }
         onClick={() => navigate("/details-form")}
