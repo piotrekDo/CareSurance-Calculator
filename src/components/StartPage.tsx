@@ -9,40 +9,26 @@ import {
   Checkbox,
   Button,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
-
-interface BasicData {
-  registrationNumber: string;
-  isRegistrationNumberValid: boolean;
-  peselNumber: string;
-  isPeselNumberValid: boolean;
-  privacyPolicyConsent: boolean;
-}
+import { DataContext } from "../App";
 
 export const StartPage = () => {
   const navigate = useNavigate();
-
-  const [basicData, setBasicData] = useState<BasicData>({
-    registrationNumber: "",
-    isRegistrationNumberValid: false,
-    peselNumber: "",
-    isPeselNumberValid: false,
-    privacyPolicyConsent: false,
-  });
+  const context = useContext(DataContext);
 
   const onRegistrationNumberChanged = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setBasicData({
-      ...basicData,
+    context.basicDataModifier({
+      ...context.basicData,
       registrationNumber: event.currentTarget.value,
     });
   };
 
   const onPeselNumberChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setBasicData({
-      ...basicData,
+    context.basicDataModifier({
+      ...context.basicData,
       peselNumber: event.currentTarget.value,
     });
   };
@@ -50,26 +36,26 @@ export const StartPage = () => {
   const onPrivacyPolicyConsentChanged = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setBasicData({
-      ...basicData,
+    context.basicDataModifier({
+      ...context.basicData,
       privacyPolicyConsent: event.currentTarget.checked,
     });
   };
 
   const isPeselNumberValid = () => {
-    if (!basicData.peselNumber) {
+    if (!context.basicData.peselNumber) {
       return false;
     }
 
-    return basicData.peselNumber.length === 11;
+    return context.basicData.peselNumber.length === 11;
   };
 
   const isRegistrationNumberValid = () => {
-    if (!basicData.registrationNumber) {
+    if (!context.basicData.registrationNumber) {
       return false;
     }
 
-    return basicData.registrationNumber.length <= 8;
+    return context.basicData.registrationNumber.length <= 8;
   };
 
   return (
@@ -80,31 +66,32 @@ export const StartPage = () => {
       <Stack direction={"column"} bg="white" p={16}>
         <FormControl
           isInvalid={
-            !!basicData.registrationNumber && !isRegistrationNumberValid()
+            !!context.basicData.registrationNumber &&
+            !isRegistrationNumberValid()
           }
         >
           <FormLabel>Numer rejestracyjny</FormLabel>
           <Input
             type="text"
-            value={basicData.registrationNumber}
+            value={context.basicData.registrationNumber}
             onChange={onRegistrationNumberChanged}
           />
           <FormErrorMessage>Niewłaściwy numer rejestracyjny</FormErrorMessage>
         </FormControl>
         <FormControl
-          isInvalid={!!basicData.peselNumber && !isPeselNumberValid()}
+          isInvalid={!!context.basicData.peselNumber && !isPeselNumberValid()}
         >
           <FormLabel>Numer PESEL właściciela pojazdu</FormLabel>
           <Input
             type="text"
-            value={basicData.peselNumber}
+            value={context.basicData.peselNumber}
             onChange={onPeselNumberChanged}
           />
           <FormErrorMessage>Niewłaściwy numer PESEL</FormErrorMessage>
         </FormControl>
         <Checkbox
           onChange={onPrivacyPolicyConsentChanged}
-          isInvalid={!basicData.privacyPolicyConsent}
+          isInvalid={!context.basicData.privacyPolicyConsent}
         >
           Akceptuję politykę prywatności
         </Checkbox>
@@ -113,7 +100,7 @@ export const StartPage = () => {
           disabled={
             !isRegistrationNumberValid() ||
             !isPeselNumberValid() ||
-            !basicData.privacyPolicyConsent
+            !context.basicData.privacyPolicyConsent
           }
           onClick={() => navigate("/details-form")}
         >

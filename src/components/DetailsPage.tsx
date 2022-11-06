@@ -1,3 +1,8 @@
+import { useContext } from "react";
+import { DataContext } from "../App";
+
 export const DetailsPage = () => {
-  return <div>Szczegóły</div>;
+  const context = useContext(DataContext);
+
+  return <div>Szczegóły: {context.basicData.registrationNumber}</div>;
 };
