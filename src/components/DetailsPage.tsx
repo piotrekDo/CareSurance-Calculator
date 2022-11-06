@@ -9,6 +9,7 @@ import {
   Stack,
   Select,
   Skeleton,
+  useToast,
 } from "@chakra-ui/react";
 import { DataContext } from "../App";
 import { Wrapper } from "./Wrapper";
@@ -17,6 +18,8 @@ import { PeselInput } from "./PeselInput";
 import { DataApi } from "../api/DataApi";
 import { UsageIntent } from "../models/UsageIntent";
 import { CustomVehicleUsage } from "../models/CustomVehicleUsage";
+import { VehicleApi } from "../api/VehicleApi";
+import { Manufacturer } from "../models/Manufacturer";
 
 interface RequestStatus<T> {
   isLoaded: boolean;
@@ -25,6 +28,14 @@ interface RequestStatus<T> {
 
 export const DetailsPage = () => {
   const context = useContext(DataContext);
+  const toast = useToast();
+
+  const [requestManufacturers, setRequestManufacturers] = useState<
+    RequestStatus<Manufacturer[]>
+  >({
+    isLoaded: false,
+    data: [],
+  });
 
   const [requestVehicleUsages, setRequestVehicleUsages] = useState<
     RequestStatus<CustomVehicleUsage[]>
@@ -52,14 +63,32 @@ export const DetailsPage = () => {
 
       setRequestVehicleUsages({ data: usages.data, isLoaded: true });
     } catch (error) {
-      // todo
-      setRequestVehicleUsages({ data: [], isLoaded: false });
-      console.error(error);
+      setRequestVehicleUsages({ data: [], isLoaded: true });
+      toast({
+        title: "Uwaga!",
+        description: "Wystąpił błąd poczas pobierania danych",
+        status: "error",
+        duration: 4000,
+        isClosable: true,
+      });
+    }
+  }, []);
+
+  const fetchManufacturers = useCallback(async () => {
+    try {
+      setRequestManufacturers({ data: [], isLoaded: false });
+
+      const manufactuers = await VehicleApi.getManufacturers();
+
+      setRequestManufacturers({ data: manufactuers.data, isLoaded: true });
+    } catch (error) {
+      setRequestManufacturers({ data: [], isLoaded: true });
     }
   }, []);
 
   useEffect(() => {
     fetchVehicleUsage();
+    fetchManufacturers();
   }, []);
 
   return (
@@ -101,12 +130,24 @@ export const DetailsPage = () => {
           </Stack>
         </RadioGroup>
       </FormControl>
+      {context.extendedData.usageIntent === UsageIntent.Custom && (
+        <FormControl>
+          <FormLabel>Sposób niestandardowego wykorzystania</FormLabel>
+          <Skeleton isLoaded={requestVehicleUsages.isLoaded}>
+            <Select placeholder="Wybierz sposób">
+              {requestVehicleUsages.data.map((vehicleUsage) => (
+                <option value={vehicleUsage.name}>{vehicleUsage.name}</option>
+              ))}
+            </Select>
+          </Skeleton>
+        </FormControl>
+      )}
       <FormControl>
-        <FormLabel>Sposób niestandardowego wykorzystania</FormLabel>
-        <Skeleton isLoaded={requestVehicleUsages.isLoaded}>
-          <Select placeholder="Wybierz sposób">
-            {requestVehicleUsages.data.map((vehicleUsage) => (
-              <option value={vehicleUsage.name}>{vehicleUsage.name}</option>
+        <FormLabel>Producent</FormLabel>
+        <Skeleton isLoaded={requestManufacturers.isLoaded}>
+          <Select placeholder="Wybierz producenta">
+            {requestManufacturers.data.map((manufacturer) => (
+              <option value={manufacturer.name}>{manufacturer.name}</option>
             ))}
           </Select>
         </Skeleton>
