@@ -7,6 +7,7 @@ import { createContext, useState } from "react";
 import { BasicData } from "./models/BasicData";
 import { ExtendedData } from "./models/ExtendedData";
 import { UsageIntent } from "./models/UsageIntent";
+import { OfferPage } from "./components/OfferPage";
 
 interface DataContext {
   basicData: BasicData;
@@ -27,6 +28,7 @@ export const DataContext = createContext<DataContext>({
   extendedData: {
     insuranceStartDate: new Date(),
     usageIntent: UsageIntent.Private,
+    manufacturer: "",
   },
   extendedDataModifier: (value: ExtendedData) => {},
 });
@@ -43,6 +45,7 @@ function App() {
   const [extendedData, setExtendedData] = useState<ExtendedData>({
     insuranceStartDate: new Date(),
     usageIntent: UsageIntent.Private,
+    manufacturer: "",
   });
 
   const basicDataModifier = (value: BasicData) => {
@@ -67,6 +70,7 @@ function App() {
           <Routes>
             <Route path="/" element={<StartPage />}></Route>
             <Route path="/details-form" element={<DetailsPage />}></Route>
+            <Route path="/offer" element={<OfferPage />}></Route>
           </Routes>
         </BrowserRouter>
       </ChakraProvider>
